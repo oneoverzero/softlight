@@ -1,52 +1,83 @@
 
-
 <html>
     <head>
-    <title>Emergency Softlight</title>
-    <meta name="description" content="Turn your monitor into an emergency softlight for video calls">
-    
-    <meta property="og:url" content="http://carmo.io/softlight/">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Emergency Softlight">
-    <meta property="og:description" content="Turn your monitor into an emergency softlight for video calls">
-    <meta property="og:image" content="http://carmo.io/softlight/ring.jpg">
-    
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:domain" content="carmo.io">
-    <meta property="twitter:url" content="http://carmo.io/softlight/">
-    <meta name="twitter:title" content="Emergency Softlight">
-    <meta name="twitter:description" content="Turn your monitor into an emergency softlight for video calls">
-    <meta name="twitter:image" content="http://carmo.io/softlight/ring.jpg">
-    <style>
-                  body { background-color: black; }
-                  .target { background: transparent; display: flex; }
-                  .color { float: left; width: 32px; height: 32px; margin: 4px; border: none; border: 1px solid lightslategrey; }
-                  .color:hover { border: 1px solid black;}
-                  #ring { position: absolute; z-index: -1; top: 0; left: 0; height: 100%; width: 100%; }
-            </style>
-    <script>
-                function main() {
-                    const colors = ["white", "#FCF9D9", "#FFCCCC", "black"],
-                    target = document.querySelector('#target');
-                    for(var i in colors) {
-                        var div = document.createElement('div');
-                        div.setAttribute("class", "color")
-                        div.onclick = function(e) {
-                            console.log("foo")
-                            document.querySelector("body").style.backgroundColor = e.target.style.backgroundColor;
-                        }
-                        div.style.backgroundColor = colors[i];
-                        target.parentNode.insertBefore(div, target)
-                    }
+        <title>Emergency Softlight</title>
+        <meta name="description" content="Turn your monitor into an emergency softlight for video calls">
+
+        <!-- Facebook Meta Tags -->
+        <meta property="og:url" content="http://carmo.io/softlight/">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="Emergency Softlight">
+        <meta property="og:description" content="Turn your monitor into an emergency softlight for video calls">
+        <meta property="og:image" content="http://carmo.io/softlight/ring.jpg">
+
+        <!-- Twitter Meta Tags -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta property="twitter:domain" content="carmo.io">
+        <meta property="twitter:url" content="http://carmo.io/softlight/">
+        <meta name="twitter:title" content="Emergency Softlight">
+        <meta name="twitter:description" content="Turn your monitor into an emergency softlight for video calls">
+        <meta name="twitter:image" content="http://carmo.io/softlight/ring.jpg">
+        
+        <style>
+              body { background-color: black; }
+              .target { background: transparent; display: flex; }
+              .color { float: left; width: 24px; height: 24px; margin: 2px; border: none; border: 1px solid lightslategrey; }
+              .color:hover { border: 1px solid black;}
+              #ring { position: absolute; z-index: -1; top: 0; left: 0; height: 100%; width: 100%; }
+              #container { position: absolute; z-index: 0; top: 0; left: 0; height: 32px; width: 100%; }
+        </style>
+        <script>
+            function main() {
+                const colors = ["white", "#FCF9D9", "#FFD48A", "#F8B868", "#FFCCCC", "#EAF6F5", "black"],
+                      opacity = [0, 0.25, 0.5, 0.75, 1],
+                      ring = document.getElementById('ring'),
+                      target = document.getElementById('target'),
+                      container = document.getElementById("container");
+                var timeout, clicks = 0;
+
+                container.onclick = function() {
+                    ring.style.opacity = opacity[clicks++];
+                    clicks = clicks % opacity.length;
                 }
-            </script>
+
+                container.onmouseover = function () {
+                    document.getElementById("palette").style.display = 'flex';
+                    timeout = setTimeout(function () {
+                        document.getElementById("palette").style.display = 'none';
+                    }, 5000);
+                };
+
+                container.onmouseout = function() {
+                    document.getElementById("palette").style.display = 'flex';
+                };
+
+                for(var i in colors) {
+                    var div = document.createElement('div');
+                    div.setAttribute("class", "color")
+                    div.onclick = function(e) {
+                        document.querySelector("body").style.backgroundColor = e.target.style.backgroundColor;
+                        e.stopPropagation();
+                    }
+                    div.style.backgroundColor = colors[i];
+                    target.parentNode.insertBefore(div, target)
+                }
+                document.getElementById("picker").onchange = function() {
+                    document.querySelector("body").style.backgroundColor = this.value;
+                }
+            }
+        </script>
     </head>
     <body onload="main()">
-    <div id="target">
-    </div>
-    <svg id="ring" height="100%" width="100%">
-    <circle cx="50%" cy="50%" r="25%" stroke="white" stroke-width="150" fill="transparent" />
-    </svg>
+        <div id="container">
+            <div id="palette">
+                <input id="picker" type="color" class="color"/>
+                <div id="target">
+                </div>    
+            </div>
+        </div>
+        <svg id="ring" height="100%" width="100%">
+            <circle cx="50%" cy="50%" r="25%" stroke="white" stroke-width="150" fill="transparent" />
+        </svg>    
     </body>
-    </html>
-    
+</html>
